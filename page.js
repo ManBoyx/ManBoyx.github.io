@@ -30,7 +30,7 @@
     svg.setAttribute('class', 'icone');
     svg.setAttribute('viewBox', '0 0 16 16');
     svg.setAttribute('aria-hidden', 'true');
-    [['1,5 8,1 15,5 8,9', 0.35], ['1,5 8,9 8,15 1,11', 0], ['15,5 8,9 8,15 15,11', -0.35]].forEach(function (f) {
+    [['1,5 8,1 15,5 8,9', -0.1], ['1,5 8,9 8,15 1,11', -0.3], ['15,5 8,9 8,15 15,11', -0.5]].forEach(function (f) {
       var p = document.createElementNS(NS, 'polygon');
       p.setAttribute('points', f[0]);
       p.setAttribute('fill', eclaircir(couleur, f[1]));
