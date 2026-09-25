@@ -256,36 +256,6 @@
     });
   });
 
-  // ---- La ligne de présentation s'écrit, s'efface, puis laisse la place à la suivante
-  var bio = $('bio');
-  var phrases = ['Développeur et administrateur du serveur Minebed et du projet Minebed.', 'Serveur Minecraft et logiciels libres.'];
-  var calme = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function machine() {
-    if (!bio || calme) return;
-    var n = 0, k = phrases[0].length, sens = -1, pause = 3200;
-    (function pas() {
-      var delai = 45;
-      if (pause) { delai = pause; pause = 0; }
-      else {
-        k += sens;
-        bio.textContent = phrases[n].slice(0, k);
-        if (sens > 0 && k >= phrases[n].length) { sens = -1; pause = 3200; }
-        else if (sens < 0 && k <= 0) { n = (n + 1) % phrases.length; sens = 1; pause = 300; }
-        delai = sens < 0 ? 22 : 45;
-      }
-      setTimeout(pas, delai);
-    })();
-  }
-  var carte = $('carte');
-  if (carte && !calme && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    carte.addEventListener('mousemove', function (e) {
-      var r = carte.getBoundingClientRect();
-      carte.style.setProperty('--ry', (((e.clientX - r.left) / r.width - 0.5) * 8).toFixed(2) + 'deg');
-      carte.style.setProperty('--rx', ((0.5 - (e.clientY - r.top) / r.height) * 8).toFixed(2) + 'deg');
-    });
-    carte.addEventListener('mouseleave', function () { carte.style.setProperty('--rx', '0deg'); carte.style.setProperty('--ry', '0deg'); });
-  }
-
   // ---- Écran d'entrée : un clic, et la musique démarre (un navigateur ne lance le son qu'après un geste)
   var entree = $('entree'), page = $('page');
   if (entree && page) {
@@ -293,10 +263,8 @@
     $('entrer').focus();
     var entrer = function (avecMusique) {
       page.removeAttribute('inert');
-      entree.classList.add('sortie');
-      setTimeout(function () { entree.hidden = true; }, 400);
+      entree.hidden = true;
       if (avecMusique && pistes.length) charger(0); // dans le même geste que le clic : le son est autorisé
-      machine();
     };
     $('entrer').addEventListener('click', function () { entrer(true); });
     $('entrer-muet').addEventListener('click', function () { entrer(false); });
