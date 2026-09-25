@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com; base-uri 'none'; form-action 'none'">
   <title>ManBoyx</title>
-  <meta name="description" content="Page personnelle de ManBoyx : le serveur Minecraft Minebed et des logiciels libres.">
+  <meta name="description" content="Page personnelle de ManBoyx, développeur et administrateur du serveur Minebed et du projet Minebed : dépôts, activité GitHub et musique.">
   <meta name="theme-color" content="#101218">
   <meta property="og:title" content="ManBoyx">
   <meta property="og:description" content="Le serveur Minecraft Minebed et des logiciels libres.">
@@ -13,17 +13,15 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script src="wordmark.js" defer></script>
+  <script src="page.js" defer></script>
 </head>
 <body>
   <main class="stage">
     <article class="card">
-      <svg class="avatar" viewBox="0 0 64 64" role="img" aria-label="Un bloc lumineux" shape-rendering="crispEdges">
-        <polygon class="top" points="32,6 56,20 32,34 8,20"/>
-        <polygon class="left" points="8,20 32,34 32,60 8,46"/>
-        <polygon class="right" points="56,20 32,34 32,60 56,46"/>
-      </svg>
+      <img class="photo" src="photo.png" width="112" height="112" alt="Photo de profil de ManBoyx : un renard endormi sous un arbre, en pixels">
 
       <h1 class="wordmark">ManBoyx</h1>
+      <p class="role">Développeur et administrateur du serveur Minebed et du projet Minebed.</p>
       <p class="bio">Serveur Minecraft et logiciels libres.</p>
 
       <ul class="links">
@@ -46,6 +44,32 @@
           </a>
         </li>
       </ul>
+
+      <section class="block" aria-labelledby="h-projets" id="projets" hidden>
+        <h2 id="h-projets">Projets</h2>
+        <ul class="repos" id="repos"></ul>
+      </section>
+
+      <section class="block" aria-labelledby="h-activite" id="activite" hidden>
+        <h2 id="h-activite">Activité sur GitHub</h2>
+        <p class="sub" id="activite-texte"></p>
+        <div class="heat" id="heat" role="img"></div>
+        <div class="legende" aria-hidden="true"><span>Moins</span><i class="d l0"></i><i class="d l1"></i><i class="d l2"></i><i class="d l3"></i><i class="d l4"></i><span>Plus</span></div>
+      </section>
+
+      <section class="block" aria-labelledby="h-musique">
+        <h2 id="h-musique">Musique</h2>
+        <ul class="tracks">
+          <li><a class="track" href="https://www.youtube.com/watch?v=KK3KXAECte4" rel="noopener" data-id="KK3KXAECte4" data-title="MEGALOVANIA, Toby Fox (Undertale)">
+            <span class="play" aria-hidden="true"></span><span class="tname">MEGALOVANIA</span><span class="tby">Toby Fox, Undertale</span>
+          </a></li>
+          <li><a class="track" href="https://www.youtube.com/watch?v=9bxYuFzAX40" rel="noopener" data-id="9bxYuFzAX40" data-title="Les Rats, L'Allemand">
+            <span class="play" aria-hidden="true"></span><span class="tname">Les Rats</span><span class="tby">L'Allemand</span>
+          </a></li>
+        </ul>
+        <div class="player" id="player"></div>
+        <p class="note">Le lecteur YouTube ne se charge que lorsque vous appuyez sur une piste.</p>
+      </section>
     </article>
   </main>
 </body>
