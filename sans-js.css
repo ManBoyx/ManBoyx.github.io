@@ -1,0 +1,2 @@
+/* Sans JavaScript : pas d'écran d'entrée ni de barre de lecture. */
+.entree, .barre { display: none !important; }
