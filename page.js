@@ -1,5 +1,6 @@
-// Repositories et activité (lus dans data/github.json, mis à jour par tools/actualiser.py), écran d'entrée et lecteur de musique.
-// Rien ne part vers un autre site tant qu'on n'est pas entré avec la musique (ou qu'on n'a pas appuyé sur un disque).
+// Repositories et activité (lus dans data/github.json, mis à jour par tools/actualiser.py) et lecteur de musique.
+// Le lecteur pilote les lecteurs officiels de YouTube et de Vimeo, ou un fichier audio du site (fournisseur « local »).
+// Rien ne part vers un autre site tant qu'on n'est pas entré avec la musique (ou qu'on n'a pas appuyé sur une piste).
 (function () {
   'use strict';
 
@@ -14,38 +15,34 @@
     return e;
   }
   function plural(n, un, plusieurs) { return n + ' ' + (n > 1 ? plusieurs : un); }
+  function $(id) { return document.getElementById(id); }
 
-  // Un cube de la couleur du langage : l'icône du repository
-  function cube(couleur) {
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('class', 'icone');
-    svg.setAttribute('viewBox', '0 0 16 16');
-    svg.setAttribute('shape-rendering', 'crispEdges');
-    svg.setAttribute('aria-hidden', 'true');
-    [['1,5 8,1 15,5 8,9', 'top'], ['1,5 8,9 8,15 1,11', 'left'], ['15,5 8,9 8,15 15,11', 'right']].forEach(function (f) {
-      var p = document.createElementNS(NS, 'polygon');
-      p.setAttribute('points', f[0]);
-      p.setAttribute('fill', f[1] === 'top' ? shade(couleur, 0.35) : f[1] === 'left' ? couleur : shade(couleur, -0.35));
-      svg.appendChild(p);
-    });
-    return svg;
-  }
-  function shade(hex, k) {
+  // ---- Repositories : un cube de la couleur du langage sert d'icône
+  function eclaircir(hex, k) {
     var n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255];
     return '#' + c.map(function (v) {
       var w = k > 0 ? v + (255 - v) * k : v * (1 + k);
       return Math.round(w).toString(16).padStart(2, '0');
     }).join('');
   }
-
-  // ---- Repositories
+  function cube(couleur) {
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'icone');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('aria-hidden', 'true');
+    [['1,5 8,1 15,5 8,9', 0.35], ['1,5 8,9 8,15 1,11', 0], ['15,5 8,9 8,15 15,11', -0.35]].forEach(function (f) {
+      var p = document.createElementNS(NS, 'polygon');
+      p.setAttribute('points', f[0]);
+      p.setAttribute('fill', eclaircir(couleur, f[1]));
+      svg.appendChild(p);
+    });
+    return svg;
+  }
   function showRepos(repos) {
-    var list = document.getElementById('repos');
-    var section = document.getElementById('repos-bloc');
+    var list = $('repos'), section = $('repos-bloc');
     if (!list || !section || !repos.length) return;
     repos.forEach(function (r) {
-      var li = el('li');
-      var a = el('a', 'ligne');
+      var li = el('li'), a = el('a', 'ligne');
       a.href = r.url;
       a.rel = 'noopener';
       a.appendChild(cube(COULEURS[r.language] || '#7d8492'));
@@ -59,27 +56,25 @@
       li.appendChild(a);
       list.appendChild(li);
     });
-    document.getElementById('nb-repos').textContent = '(' + repos.length + ')';
+    $('nb-repos').textContent = '(' + repos.length + ')';
     section.hidden = false;
   }
 
   // ---- Activité : un bloc par jour, sept lignes, une colonne par semaine
   function showActivity(activity) {
-    var grid = document.getElementById('heat');
-    var section = document.getElementById('activite');
+    var grid = $('heat'), section = $('activite');
     if (!grid || !section || !activity || !activity.weeks.length) return;
-    var weeks = activity.weeks;
-    grid.style.setProperty('grid-template-columns', 'repeat(' + weeks.length + ', 1fr)');
-    weeks.forEach(function (week) {
+    grid.style.setProperty('grid-template-columns', 'repeat(' + activity.weeks.length + ', 1fr)');
+    activity.weeks.forEach(function (week) {
       week.forEach(function (day) {
         var d = el('i', 'd l' + day.level);
         d.title = plural(day.count, 'contribution', 'contributions') + ', le ' + date.format(new Date(day.date + 'T12:00:00'));
         grid.appendChild(d);
       });
     });
-    var resume = plural(activity.total, 'contribution', 'contributions') + ' sur les ' + weeks.length + ' dernières semaines';
+    var resume = plural(activity.total, 'contribution', 'contributions') + ' sur les ' + activity.weeks.length + ' dernières semaines';
     grid.setAttribute('aria-label', resume);
-    document.getElementById('activite-texte').textContent = resume + '.';
+    $('activite-texte').textContent = resume + '.';
     section.hidden = false;
   }
 
@@ -88,139 +83,218 @@
     .then(function (data) { showRepos(data.repos || []); showActivity(data.activity); })
     .catch(function () { /* pas de données : ces deux blocs restent cachés */ });
 
-  // ---- Lecteur : YouTube et Vimeo, une piste après l'autre
+  // ---- Lecteur
   var ORIGINES = { youtube: 'https://www.youtube-nocookie.com', vimeo: 'https://player.vimeo.com' };
-  var disques = Array.prototype.slice.call(document.querySelectorAll('.disque'));
-  var pistes = disques.map(function (a) {
-    return { lien: a, fournisseur: a.dataset.provider, id: a.dataset.id, titre: a.dataset.titre, par: a.dataset.par };
+  var pistes = Array.prototype.map.call(document.querySelectorAll('.disque'), function (a) {
+    return { lien: a, fournisseur: a.dataset.provider, id: a.dataset.id, src: a.dataset.src, titre: a.dataset.titre, par: a.dataset.par };
   });
-  var lecteur = document.getElementById('lecteur');
-  var barre = document.getElementById('barre');
-  var barreTexte = document.getElementById('barre-texte');
-  var btnLecture = document.getElementById('btn-lecture');
-  var btnPause = document.getElementById('btn-pause');
-  var btnSuivant = document.getElementById('btn-suivant');
-  var courante = -1, cadre = null, etat = null; // etat : null (inconnu), 'lecture' ou 'pause'
-  var recu = false; // le lecteur a-t-il déjà répondu ?
+  var ecran = $('ecran'), barre = $('barre'), progres = $('b-progres'), volume = $('b-vol'), boutonJouer = $('b-jouer');
+  // L'état du lecteur : quelle piste, l'élément qui joue, et ce que le lecteur nous a dit (lecture, temps, durée)
+  var s = { i: -1, cadre: null, audio: null, lecture: false, temps: 0, duree: 0, glisse: false, recu: false, dernier: null, volume: 1 };
 
-  function adresse(p) {
-    if (p.fournisseur === 'youtube') {
-      var q = '?autoplay=1&enablejsapi=1&rel=0&playsinline=1';
-      if (location.origin && location.origin !== 'null') q += '&origin=' + encodeURIComponent(location.origin);
-      return ORIGINES.youtube + '/embed/' + encodeURIComponent(p.id) + q;
-    }
-    return ORIGINES.vimeo + '/video/' + encodeURIComponent(p.id) + '?autoplay=1&dnt=1&title=0&byline=0&portrait=0&playsinline=1';
+  function minsec(t) {
+    t = Math.max(0, Math.floor(t || 0));
+    return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
   }
-  function envoyer(message) {
-    if (!cadre || !cadre.contentWindow) return;
-    cadre.contentWindow.postMessage(JSON.stringify(message), ORIGINES[pistes[courante].fournisseur]);
-  }
-  function abonner() {
-    var p = pistes[courante];
-    if (p.fournisseur === 'youtube') {
-      envoyer({ event: 'listening', id: 1, channel: 'widget' });
-    } else {
-      ['play', 'pause', 'ended', 'finish'].forEach(function (nom) { envoyer({ method: 'addEventListener', value: nom }); });
-    }
-  }
-  function afficherBarre() {
-    var p = pistes[courante];
+  function afficher() {
+    var p = pistes[s.i];
     if (!p) return;
-    var debut = etat === 'lecture' ? 'En lecture : ' : etat === 'pause' ? 'En pause : ' : 'Musique : ';
-    barreTexte.textContent = debut + p.titre + ' (' + p.par + ')';
+    $('b-titre').textContent = p.titre;
+    $('b-par').textContent = p.par;
+    boutonJouer.classList.toggle('est-lecture', s.lecture);
+    barre.classList.toggle('est-lecture', s.lecture);
+    boutonJouer.setAttribute('aria-label', s.lecture ? 'Pause' : 'Lecture');
+    if (!s.glisse) {
+      var part = s.duree > 0 ? Math.min(1, s.temps / s.duree) : 0;
+      progres.value = Math.round(part * 1000);
+      progres.style.setProperty('--p', (part * 100).toFixed(1) + '%');
+      $('b-temps').textContent = minsec(s.temps);
+    }
+    $('b-duree').textContent = minsec(s.duree);
+    progres.setAttribute('aria-valuetext', minsec(s.temps) + ' sur ' + minsec(s.duree));
     barre.hidden = false;
   }
-  function changerEtat(nouveau) {
-    if (nouveau === etat) return;
-    etat = nouveau;
-    afficherBarre();
+
+  function envoyer(message) {
+    var p = pistes[s.i];
+    if (!s.cadre || !s.cadre.contentWindow || !p) return;
+    s.cadre.contentWindow.postMessage(JSON.stringify(message), ORIGINES[p.fournisseur]);
+  }
+  function commande(nom, valeur) {
+    var p = pistes[s.i];
+    if (!p) return;
+    if (p.fournisseur === 'local') {
+      if (!s.audio) return;
+      if (nom === 'lire') s.audio.play(); else if (nom === 'pause') s.audio.pause();
+      else if (nom === 'aller') s.audio.currentTime = valeur; else if (nom === 'volume') s.audio.volume = valeur;
+    } else if (p.fournisseur === 'youtube') {
+      var f = { lire: 'playVideo', pause: 'pauseVideo', aller: 'seekTo', volume: 'setVolume' }[nom];
+      var args = nom === 'aller' ? [valeur, true] : nom === 'volume' ? [Math.round(valeur * 100)] : [];
+      envoyer({ event: 'command', func: f, args: args });
+    } else {
+      var m = { lire: 'play', pause: 'pause', aller: 'setCurrentTime', volume: 'setVolume' }[nom];
+      envoyer(valeur === undefined ? { method: m } : { method: m, value: valeur });
+    }
+  }
+  function abonner() {
+    var p = pistes[s.i];
+    if (p.fournisseur === 'youtube') envoyer({ event: 'listening', id: 1, channel: 'widget' });
+    else if (p.fournisseur === 'vimeo') ['play', 'pause', 'ended', 'finish', 'timeupdate'].forEach(function (nom) { envoyer({ method: 'addEventListener', value: nom }); });
   }
 
+  function nettoyer() {
+    if (s.audio) { s.audio.pause(); s.audio.removeAttribute('src'); s.audio.load(); s.audio = null; }
+    ecran.textContent = '';
+    s.cadre = null;
+  }
   function charger(i) {
     var p = pistes[i];
-    courante = i;
-    etat = null;
-    lecteur.textContent = '';
-    cadre = document.createElement('iframe');
-    cadre.src = adresse(p);
-    cadre.title = 'Lecteur : ' + p.titre + ', ' + p.par;
-    cadre.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-    cadre.referrerPolicy = 'strict-origin-when-cross-origin';
-    cadre.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox');
-    var mine = cadre;
-    recu = false;
-    // Le lecteur met un moment à démarrer : on lui demande de nous tenir au courant toutes les demi-secondes, jusqu'à sa première réponse.
-    cadre.addEventListener('load', function () {
-      var essais = 0;
-      var minuterie = setInterval(function () {
-        if (cadre !== mine || recu || ++essais > 30) { clearInterval(minuterie); return; }
-        abonner();
-      }, 500);
-    });
-    lecteur.appendChild(cadre);
+    nettoyer();
+    s.i = i; s.lecture = false; s.temps = 0; s.duree = 0; s.recu = false; s.dernier = null;
     pistes.forEach(function (x, k) { if (k === i) x.lien.setAttribute('aria-current', 'true'); else x.lien.removeAttribute('aria-current'); });
-    afficherBarre();
-  }
-  function suivante() { if (pistes.length) charger((courante + 1) % pistes.length); }
 
-  // Les messages du lecteur : 1 = lecture, 2 = pause, 0 = fin (YouTube) ; play / pause / ended (Vimeo).
-  var dernierEtat = null;
+    if (p.fournisseur === 'local') {
+      var audio = new Audio(p.src);
+      s.audio = audio;
+      audio.volume = s.volume;
+      audio.addEventListener('play', function () { s.lecture = true; afficher(); });
+      audio.addEventListener('pause', function () { s.lecture = false; afficher(); });
+      audio.addEventListener('timeupdate', function () { s.temps = audio.currentTime; afficher(); });
+      audio.addEventListener('durationchange', function () { s.duree = isFinite(audio.duration) ? audio.duration : 0; afficher(); });
+      audio.addEventListener('ended', suivante);
+      ecran.appendChild(el('p', 'vide', p.titre + ', ' + p.par));
+      audio.play().catch(function () { /* le navigateur a refusé : il faudra appuyer sur lecture */ });
+    } else {
+      var cadre = document.createElement('iframe');
+      var q = p.fournisseur === 'youtube'
+        ? '?autoplay=1&enablejsapi=1&rel=0&playsinline=1' + (location.origin && location.origin !== 'null' ? '&origin=' + encodeURIComponent(location.origin) : '')
+        : '?autoplay=1&dnt=1&title=0&byline=0&portrait=0&playsinline=1';
+      cadre.src = ORIGINES[p.fournisseur] + (p.fournisseur === 'youtube' ? '/embed/' : '/video/') + encodeURIComponent(p.id) + q;
+      cadre.title = 'Lecteur : ' + p.titre + ', ' + p.par;
+      cadre.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      cadre.referrerPolicy = 'strict-origin-when-cross-origin';
+      cadre.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox');
+      s.cadre = cadre;
+      // Le lecteur met un moment à démarrer : on lui demande de nous tenir au courant toutes les demi-secondes, jusqu'à sa première réponse.
+      cadre.addEventListener('load', function () {
+        var essais = 0;
+        var minuterie = setInterval(function () {
+          if (s.cadre !== cadre || s.recu || ++essais > 30) { clearInterval(minuterie); return; }
+          abonner();
+        }, 500);
+      });
+      ecran.appendChild(cadre);
+    }
+    afficher();
+  }
+  function suivante() { if (pistes.length) charger((s.i + 1) % pistes.length); }
+  function precedente() { if (pistes.length) charger((s.i - 1 + pistes.length) % pistes.length); }
+
+  // Ce que dit le lecteur : 1 = lecture, 2 = pause, 0 = fin (codes de YouTube ; ceux de Vimeo sont traduits)
+  function etat(code) {
+    if ((code !== 0 && code !== 1 && code !== 2) || code === s.dernier) return;
+    s.dernier = code;
+    if (code === 1) s.lecture = true;
+    else if (code === 2) s.lecture = false;
+    else { s.lecture = false; s.dernier = null; suivante(); }
+  }
   window.addEventListener('message', function (e) {
-    if (!cadre || e.source !== cadre.contentWindow) return;
+    var p = pistes[s.i];
+    if (!p || !s.cadre || e.source !== s.cadre.contentWindow) return;
     var d = e.data;
     if (typeof d === 'string') { try { d = JSON.parse(d); } catch (_) { return; } }
     if (!d || typeof d !== 'object') return;
-    // Vimeo envoie aussi des messages de son propre contrôle anti-robot : seuls ceux du lecteur comptent.
-    if (d.channel === 'widget' || d.event === 'ready' || d.event === 'play' || d.event === 'pause' || d.event === 'ended' || d.event === 'finish') recu = true;
-    if (d.event === 'ready' && pistes[courante].fournisseur === 'vimeo') abonner();
-    var code = null;
-    if (pistes[courante].fournisseur === 'youtube') {
-      if (d.event === 'onStateChange') code = d.info;
-      else if (d.event === 'infoDelivery' && d.info && typeof d.info.playerState === 'number') code = d.info.playerState;
-    } else if (d.event === 'play') code = 1;
-    else if (d.event === 'pause') code = 2;
-    else if (d.event === 'ended' || d.event === 'finish') code = 0;
-    if (code === null || code === dernierEtat) return;
-    dernierEtat = code;
-    if (code === 1) changerEtat('lecture');
-    else if (code === 2) changerEtat('pause');
-    else if (code === 0) { dernierEtat = null; suivante(); }
+    if (p.fournisseur === 'youtube') {
+      if (d.channel === 'widget') s.recu = true;
+      var info = d.info;
+      if (d.event === 'infoDelivery' && info) {
+        if (typeof info.currentTime === 'number') s.temps = info.currentTime;
+        if (typeof info.duration === 'number' && info.duration > 0) s.duree = info.duration;
+        if (typeof info.playerState === 'number') etat(info.playerState);
+      } else if (d.event === 'onStateChange') etat(info);
+    } else {
+      // Vimeo envoie aussi les messages de son contrôle anti-robot : seuls ceux du lecteur comptent.
+      if (['ready', 'play', 'pause', 'ended', 'finish', 'timeupdate', 'playProgress'].indexOf(d.event) >= 0) s.recu = true;
+      if (d.event === 'ready') abonner();
+      else if (d.event === 'play') { etat(1); if (d.data && d.data.duration) s.duree = d.data.duration; }
+      else if (d.event === 'pause') etat(2);
+      else if (d.event === 'ended' || d.event === 'finish') etat(0);
+      else if ((d.event === 'timeupdate' || d.event === 'playProgress') && d.data) { s.temps = d.data.seconds; s.duree = d.data.duration; }
+    }
+    afficher();
   });
 
-  function commande(nom) {
-    if (courante < 0) return;
-    var yt = pistes[courante].fournisseur === 'youtube';
-    if (nom === 'pause') envoyer(yt ? { event: 'command', func: 'pauseVideo', args: [] } : { method: 'pause' });
-    else envoyer(yt ? { event: 'command', func: 'playVideo', args: [] } : { method: 'play' });
-  }
-  btnPause.addEventListener('click', function () { commande('pause'); });
-  btnLecture.addEventListener('click', function () { commande('lecture'); });
-  btnSuivant.addEventListener('click', function () { dernierEtat = null; suivante(); });
-
-  disques.forEach(function (lien, i) {
-    lien.addEventListener('click', function (event) {
+  // Les commandes de la barre
+  boutonJouer.addEventListener('click', function () { commande(s.lecture ? 'pause' : 'lire'); });
+  $('b-suiv').addEventListener('click', suivante);
+  $('b-prec').addEventListener('click', precedente);
+  progres.addEventListener('input', function () {
+    s.glisse = true;
+    var t = (progres.value / 1000) * s.duree;
+    $('b-temps').textContent = minsec(t);
+    progres.style.setProperty('--p', (progres.value / 10).toFixed(1) + '%');
+  });
+  progres.addEventListener('change', function () {
+    commande('aller', (progres.value / 1000) * s.duree);
+    s.temps = (progres.value / 1000) * s.duree;
+    s.glisse = false;
+    afficher();
+  });
+  volume.addEventListener('input', function () {
+    s.volume = volume.value / 100;
+    commande('volume', s.volume);
+  });
+  pistes.forEach(function (p, i) {
+    p.lien.addEventListener('click', function (event) {
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return; // ouvrir dans un onglet reste possible
       event.preventDefault();
-      dernierEtat = null;
       charger(i);
     });
   });
 
+  // ---- La ligne de présentation s'écrit, s'efface, puis laisse la place à la suivante
+  var bio = $('bio');
+  var phrases = ['Développeur et administrateur du serveur Minebed et du projet Minebed.', 'Serveur Minecraft et logiciels libres.'];
+  var calme = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function machine() {
+    if (!bio || calme) return;
+    var n = 0, k = phrases[0].length, sens = -1, pause = 3200;
+    (function pas() {
+      var delai = 45;
+      if (pause) { delai = pause; pause = 0; }
+      else {
+        k += sens;
+        bio.textContent = phrases[n].slice(0, k);
+        if (sens > 0 && k >= phrases[n].length) { sens = -1; pause = 3200; }
+        else if (sens < 0 && k <= 0) { n = (n + 1) % phrases.length; sens = 1; pause = 300; }
+        delai = sens < 0 ? 22 : 45;
+      }
+      setTimeout(pas, delai);
+    })();
+  }
+  var carte = $('carte');
+  if (carte && !calme && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    carte.addEventListener('mousemove', function (e) {
+      var r = carte.getBoundingClientRect();
+      carte.style.setProperty('--ry', (((e.clientX - r.left) / r.width - 0.5) * 8).toFixed(2) + 'deg');
+      carte.style.setProperty('--rx', ((0.5 - (e.clientY - r.top) / r.height) * 8).toFixed(2) + 'deg');
+    });
+    carte.addEventListener('mouseleave', function () { carte.style.setProperty('--rx', '0deg'); carte.style.setProperty('--ry', '0deg'); });
+  }
+
   // ---- Écran d'entrée : un clic, et la musique démarre (un navigateur ne lance le son qu'après un geste)
-  var entree = document.getElementById('entree');
-  var page = document.getElementById('page');
-  var boutonEntrer = document.getElementById('entrer');
+  var entree = $('entree'), page = $('page');
   if (entree && page) {
     page.setAttribute('inert', '');
-    boutonEntrer.focus();
+    $('entrer').focus();
     var entrer = function (avecMusique) {
       page.removeAttribute('inert');
-      document.body.classList.add('entre');
       entree.classList.add('sortie');
-      setTimeout(function () { entree.hidden = true; }, 450);
+      setTimeout(function () { entree.hidden = true; }, 400);
       if (avecMusique && pistes.length) charger(0); // dans le même geste que le clic : le son est autorisé
+      machine();
     };
-    boutonEntrer.addEventListener('click', function () { entrer(true); });
-    document.getElementById('entrer-muet').addEventListener('click', function () { entrer(false); });
+    $('entrer').addEventListener('click', function () { entrer(true); });
+    $('entrer-muet').addEventListener('click', function () { entrer(false); });
   }
 })();

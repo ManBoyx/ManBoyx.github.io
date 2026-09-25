@@ -1,2 +1,2 @@
-/* Sans JavaScript : pas d'écran d'entrée ni de barre de lecture. */
-.entree, .barre { display: none !important; }
+/* Sans JavaScript : pas d'écran d'entrée ni de lecteur flottant. */
+.entree, .pilule { display: none !important; }

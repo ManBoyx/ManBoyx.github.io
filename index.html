@@ -3,100 +3,119 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://player.vimeo.com; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://player.vimeo.com; base-uri 'none'; form-action 'none'">
   <title>Manboyxv4</title>
   <meta name="description" content="Page personnelle de Manboyxv4, développeur et administrateur du serveur Minebed et du projet Minebed : repositories, activité GitHub et musique.">
-  <meta name="theme-color" content="#2b1d12">
+  <meta name="theme-color" content="#0b1030">
   <meta property="og:title" content="Manboyxv4">
   <meta property="og:description" content="Le serveur Minecraft Minebed et des logiciels libres.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="fonts/PixelifySans.ttf" as="font" type="font/ttf" crossorigin>
+  <meta property="og:image" content="https://manboyx.github.io/img/minebed-logo-800.webp">
+  <link rel="icon" href="img/minebed-icone.webp" type="image/webp">
+  <link rel="preload" href="fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="fonts/Fredoka.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="style.css">
   <noscript><link rel="stylesheet" href="sans-js.css"></noscript>
-  <script src="wordmark.js" defer></script>
   <script src="page.js" defer></script>
 </head>
 <body>
+  <svg class="sr" width="0" height="0" aria-hidden="true">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></symbol>
+    <symbol id="i-prec" viewBox="0 0 24 24"><path d="M5.5 4h3v16h-3zM20 4.5v15L9.5 12z"/></symbol>
+    <symbol id="i-suiv" viewBox="0 0 24 24"><path d="M15.5 4h3v16h-3zM4 4.5v15L14.5 12z"/></symbol>
+    <symbol id="i-vol" viewBox="0 0 24 24"><path d="M3 9.5h4l5-4v13l-5-4H3z"/><path d="M15 9a4 4 0 0 1 0 6M17.5 6.5a8 8 0 0 1 0 11" fill="none"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-couronne" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></symbol>
+  </svg>
+
+  <div class="fonds" aria-hidden="true"><i class="fond f1"></i><i class="fond f2"></i><i class="fond f3"></i></div>
+  <div class="voile" aria-hidden="true"></div>
+
   <div class="entree" id="entree" role="dialog" aria-modal="true" aria-label="Entrée">
-    <p class="wordmark grand" aria-hidden="true">Manboyxv4</p>
-    <p class="splash" aria-hidden="true">Bienvenue !</p>
-    <button class="mc" id="entrer" type="button">Entrer</button>
+    <img class="logo-entree" src="img/minebed-logo-800.webp" srcset="img/minebed-logo-400.webp 400w, img/minebed-logo-800.webp 800w" sizes="(max-width: 560px) 80vw, 420px" width="800" height="320" alt="Logo de Minebed">
+    <button class="entrer-grand" id="entrer" type="button">Cliquer pour entrer</button>
     <button class="lien" id="entrer-muet" type="button">Entrer sans la musique</button>
     <p class="note">La musique démarre quand vous entrez. Le lecteur (YouTube ou Vimeo) ne se charge qu'à ce moment-là.</p>
   </div>
 
   <main class="page" id="page">
-    <header class="tete">
-      <img class="photo" src="photo.png" width="128" height="128" alt="Photo de profil de Manboyxv4 : un renard endormi sous un arbre, en pixels">
-      <div class="identite">
-        <h1 class="wordmark">Manboyxv4</h1>
-        <p class="role">Développeur et administrateur du serveur Minebed et du projet Minebed.</p>
-        <p class="bio">Serveur Minecraft et logiciels libres.</p>
-      </div>
-    </header>
+    <article class="carte profil" id="carte">
+      <img class="avatar" src="photo.png" width="112" height="112" alt="Photo de profil de Manboyxv4 : un renard endormi sous un arbre, en pixels">
+      <h1 class="nom">Manboyxv4</h1>
+      <ul class="badges">
+        <li><svg aria-hidden="true"><use href="#i-code"/></svg>Développeur</li>
+        <li class="or"><svg aria-hidden="true"><use href="#i-couronne"/></svg>Admin Minebed</li>
+      </ul>
+      <p class="bio"><span class="sr">Développeur et administrateur du serveur Minebed et du projet Minebed.</span><span id="bio" aria-hidden="true">Développeur et administrateur du serveur Minebed et du projet Minebed.</span><i class="curseur" aria-hidden="true"></i></p>
+      <a class="banniere" href="https://minebed.fr" rel="me noopener" aria-label="Minebed, le serveur Minecraft : minebed.fr">
+        <img src="img/minebed-logo-800.webp" srcset="img/minebed-logo-400.webp 400w, img/minebed-logo-800.webp 800w" sizes="(max-width: 560px) 70vw, 320px" width="800" height="320" alt="">
+      </a>
+      <ul class="reseaux">
+        <li><a class="rond-lien" href="https://github.com/ManBoyx" rel="me noopener" aria-label="GitHub : ManBoyx" title="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a></li>
+        <li><a class="rond-lien" href="https://minebed.fr" rel="me noopener" aria-label="Site de Minebed : minebed.fr" title="minebed.fr"><img src="img/minebed-icone.webp" width="28" height="28" alt=""></a></li>
+      </ul>
+    </article>
 
-    <ul class="liste">
-      <li>
-        <a class="ligne" href="https://minebed.fr" rel="me noopener">
-          <svg class="icone" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
-            <polygon fill="#ffd27a" points="8,1 15,5 8,9 1,5"/><polygon fill="#ffb02e" points="1,5 8,9 8,15 1,11"/><polygon fill="#b86a00" points="15,5 8,9 8,15 15,11"/>
-          </svg>
-          <span class="t">Minebed</span>
-          <span class="d">Le serveur Minecraft</span>
-          <span class="m">minebed.fr</span>
-        </a>
-      </li>
-      <li>
-        <a class="ligne" href="https://github.com/ManBoyx" rel="me noopener">
-          <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" fill="#161616"/><g transform="translate(3 3) scale(.75)"><path fill="#fff" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></g></svg>
-          <span class="t">GitHub</span>
-          <span class="d">Mon profil et mes projets</span>
-          <span class="m">github.com/ManBoyx</span>
-        </a>
-      </li>
-    </ul>
-
-    <section class="bloc" id="repos-bloc" aria-labelledby="h-repos" hidden>
+    <section class="carte section" id="repos-bloc" aria-labelledby="h-repos" hidden>
       <h2 id="h-repos">Repositories <span class="nb" id="nb-repos"></span></h2>
       <ul class="liste" id="repos"></ul>
-      <a class="mc" href="https://github.com/ManBoyx?tab=repositories" rel="noopener">Tous mes repositories sur GitHub</a>
+      <a class="bouton" href="https://github.com/ManBoyx?tab=repositories" rel="noopener">Tous mes repositories sur GitHub</a>
     </section>
 
-    <section class="bloc" id="activite" aria-labelledby="h-activite" hidden>
+    <section class="carte section" id="activite" aria-labelledby="h-activite" hidden>
       <h2 id="h-activite">Activité sur GitHub</h2>
       <p class="sous" id="activite-texte"></p>
       <div class="heat" id="heat" role="img"></div>
       <div class="legende" aria-hidden="true"><span>Moins</span><i class="d l0"></i><i class="d l1"></i><i class="d l2"></i><i class="d l3"></i><i class="d l4"></i><span>Plus</span></div>
     </section>
 
-    <section class="bloc" aria-labelledby="h-musique">
+    <section class="carte section" aria-labelledby="h-musique">
       <h2 id="h-musique">Musique</h2>
-      <ul class="liste">
+      <div class="ecran" id="ecran"><p class="vide">Appuyez sur une piste pour lancer la musique.</p></div>
+      <ul class="liste pistes">
         <li>
           <a class="ligne disque" href="https://www.youtube.com/watch?v=KK3KXAECte4" rel="noopener" data-provider="youtube" data-id="KK3KXAECte4" data-titre="Megalovania" data-par="Undertale, Toby Fox">
-            <svg class="icone" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#1c1c1c"/><circle cx="8" cy="8" r="5.5" fill="#2d2d2d"/><circle cx="8" cy="8" r="3" fill="#e5484d"/><circle cx="8" cy="8" r="1" fill="#1c1c1c"/></svg>
+            <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#05081f"/><circle cx="8" cy="8" r="5.5" fill="#1b2560"/><circle cx="8" cy="8" r="3" fill="#ff5a64"/><circle cx="8" cy="8" r="1" fill="#05081f"/></svg>
             <span class="t">Megalovania</span>
             <span class="d">Undertale, Toby Fox</span>
           </a>
         </li>
         <li>
           <a class="ligne disque" href="https://vimeo.com/418489843" rel="noopener" data-provider="vimeo" data-id="418489843" data-titre="Pas de Panique à bord" data-par="Les Ratz">
-            <svg class="icone" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#1c1c1c"/><circle cx="8" cy="8" r="5.5" fill="#2d2d2d"/><circle cx="8" cy="8" r="3" fill="#4aa3e8"/><circle cx="8" cy="8" r="1" fill="#1c1c1c"/></svg>
+            <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#05081f"/><circle cx="8" cy="8" r="5.5" fill="#1b2560"/><circle cx="8" cy="8" r="3" fill="#3ad0ff"/><circle cx="8" cy="8" r="1" fill="#05081f"/></svg>
             <span class="t">Pas de Panique à bord</span>
             <span class="d">Les Ratz</span>
           </a>
         </li>
+        <li>
+          <a class="ligne disque" href="https://www.youtube.com/watch?v=tBdLO8u-0L8" rel="noopener" data-provider="youtube" data-id="tBdLO8u-0L8" data-titre="Hammer of Justice" data-par="DELTARUNE Chapitres 3 et 4, Toby Fox">
+            <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#05081f"/><circle cx="8" cy="8" r="5.5" fill="#1b2560"/><circle cx="8" cy="8" r="3" fill="#a06bff"/><circle cx="8" cy="8" r="1" fill="#05081f"/></svg>
+            <span class="t">Hammer of Justice</span>
+            <span class="d">DELTARUNE Chapitres 3 et 4, Toby Fox</span>
+          </a>
+        </li>
       </ul>
-      <div class="lecteur" id="lecteur"></div>
     </section>
   </main>
 
-  <div class="barre" id="barre" role="status" hidden>
-    <span class="lecture" id="barre-texte"></span>
-    <button class="mc petit" id="btn-lecture" type="button">Lecture</button>
-    <button class="mc petit" id="btn-pause" type="button">Pause</button>
-    <button class="mc petit" id="btn-suivant" type="button">Suivant</button>
+  <div class="pilule" id="barre" hidden>
+    <div class="pilule-haut">
+      <svg class="disque-anim" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#05081f"/><circle cx="8" cy="8" r="5.5" fill="#1b2560"/><circle cx="8" cy="8" r="3" fill="#ffb81c"/><circle cx="8" cy="8" r="1" fill="#05081f"/><path d="M8 .5A7.5 7.5 0 0 1 15.5 8" fill="none" stroke="#3ad0ff" stroke-width=".8"/></svg>
+      <p class="en-cours" role="status"><b id="b-titre"></b><span id="b-par"></span></p>
+      <div class="commandes">
+        <button class="rond" id="b-prec" type="button" aria-label="Piste précédente"><svg><use href="#i-prec"/></svg></button>
+        <button class="rond grand" id="b-jouer" type="button" aria-label="Lecture"><svg class="ic-play"><use href="#i-play"/></svg><svg class="ic-pause"><use href="#i-pause"/></svg></button>
+        <button class="rond" id="b-suiv" type="button" aria-label="Piste suivante"><svg><use href="#i-suiv"/></svg></button>
+      </div>
+    </div>
+    <div class="pilule-bas">
+      <span class="temps" id="b-temps">0:00</span>
+      <input class="progres" id="b-progres" type="range" min="0" max="1000" value="0" step="1" aria-label="Position dans la piste">
+      <span class="temps" id="b-duree">0:00</span>
+      <label class="vol"><svg aria-hidden="true"><use href="#i-vol"/></svg><input id="b-vol" type="range" min="0" max="100" value="100" aria-label="Volume"></label>
+    </div>
   </div>
 </body>
 </html>
