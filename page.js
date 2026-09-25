@@ -207,7 +207,11 @@
     if (p.fournisseur === 'youtube') {
       if (d.channel === 'widget') s.recu = true;
       var info = d.info;
+      // Dès que le lecteur répond, on lui demande de signaler les changements d'état (lecture, pause, fin).
+      if (d.event === 'initialDelivery' || d.event === 'onReady') envoyer({ event: 'command', func: 'addEventListener', args: ['onStateChange'], id: 1, channel: 'widget' });
       if (d.event === 'infoDelivery' && info) {
+        // Le temps qui avance prouve que ça joue, même si on a raté l'annonce du démarrage.
+        if (typeof info.currentTime === 'number' && info.currentTime > s.temps + 0.05 && s.dernier !== 2 && !s.lecture) { s.lecture = true; s.dernier = 1; }
         if (typeof info.currentTime === 'number') s.temps = info.currentTime;
         if (typeof info.duration === 'number' && info.duration > 0) s.duree = info.duration;
         if (typeof info.playerState === 'number') etat(info.playerState);
