@@ -1,0 +1,166 @@
+/* Page personnelle : un fond d'ardoise, une carte de verre, et un nom dessiné en gros pixels qui se pose bloc par bloc. */
+:root {
+  --deepslate: #101218;
+  --glass: rgba(24, 27, 36, 0.62);
+  --line: rgba(236, 233, 225, 0.12);
+  --bone: #ece9e1;
+  --mute: #a3a9b6;
+  --torch: #ffb02e;
+  --torch-deep: #a85f00;
+  --diamond: #4fd8e0;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--deepslate); }
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  color: var(--bone);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background:
+    radial-gradient(60vmax 45vmax at 85% -10%, rgba(79, 216, 224, 0.16), transparent 60%),
+    radial-gradient(55vmax 45vmax at -10% 110%, rgba(255, 176, 46, 0.16), transparent 60%),
+    var(--deepslate);
+}
+
+/* Une grille de blocs, à peine visible, qui s'efface vers les bords. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(236, 233, 225, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(236, 233, 225, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+
+.stage {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.card {
+  width: min(100%, 440px);
+  padding: 36px 28px 28px;
+  text-align: center;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.avatar {
+  display: block;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 176, 46, 0.08);
+}
+.avatar .top { fill: #ffcf70; }
+.avatar .left { fill: var(--torch); }
+.avatar .right { fill: #b86a00; }
+
+/* Le nom : sans script, c'est un titre ordinaire ; avec le script, des blocs. */
+.wordmark {
+  margin: 22px 0 6px;
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+.wordmark svg {
+  display: block;
+  width: 100%;
+  max-width: 328px;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+.wordmark .front { fill: var(--bone); }
+.wordmark .shade { fill: var(--torch-deep); }
+.wordmark .b {
+  animation: pose 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  animation-delay: var(--d, 0s);
+}
+@keyframes pose {
+  from { transform: translateY(-5px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.bio {
+  margin: 0;
+  color: var(--mute);
+}
+
+.links {
+  display: grid;
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.link {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px 10px 10px;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  background: rgba(236, 233, 225, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.link:hover {
+  border-color: rgba(255, 176, 46, 0.6);
+  background: rgba(255, 176, 46, 0.07);
+}
+.link:focus-visible {
+  outline: 2px solid var(--torch);
+  outline-offset: 3px;
+}
+.ico {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: rgba(236, 233, 225, 0.07);
+}
+.name { font-weight: 600; }
+.host { color: var(--mute); font-size: 0.875rem; }
+
+@media (max-width: 359px) {
+  .host { display: none; }
+  .link { grid-template-columns: 40px 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark .b { animation: none; }
+  .link { transition: none; }
+}
