@@ -82,7 +82,7 @@ body::before {
 .wordmark svg {
   display: block;
   width: 100%;
-  max-width: 328px;
+  max-width: 424px; /* le nom est plus long : 53 colonnes de blocs */
   height: auto;
   margin: 0 auto;
   overflow: visible;
@@ -289,6 +289,11 @@ body::before {
   background: #000;
 }
 .note { margin: 10px 0 0; color: var(--mute); font-size: 0.8125rem; }
+
+/* Sur téléphone, moins de marge pour que le nom en pixels reste grand */
+@media (max-width: 480px) {
+  .card { padding: 28px 18px 22px; }
+}
 
 @media (max-width: 359px) {
   .tby { display: none; }

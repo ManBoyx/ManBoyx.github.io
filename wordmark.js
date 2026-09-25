@@ -8,9 +8,12 @@
   var FONT = {
     M: { top: 0, rows: ['X...X', 'XX.XX', 'X.X.X', 'X.X.X', 'X...X', 'X...X', 'X...X'] },
     B: { top: 0, rows: ['XXXX.', 'X...X', 'X...X', 'XXXX.', 'X...X', 'X...X', 'XXXX.'] },
+    b: { top: 0, rows: ['X....', 'X....', 'XXXX.', 'X...X', 'X...X', 'X...X', 'XXXX.'] },
+    '4': { top: 0, rows: ['...X.', '..XX.', '.X.X.', 'X..X.', 'XXXXX', '...X.', '...X.'] },
     a: { top: 2, rows: ['.XXX.', '....X', '.XXXX', 'X...X', '.XXXX'] },
     n: { top: 2, rows: ['X.XX.', 'XX..X', 'X...X', 'X...X', 'X...X'] },
     o: { top: 2, rows: ['.XXX.', 'X...X', 'X...X', 'X...X', '.XXX.'] },
+    v: { top: 2, rows: ['X...X', 'X...X', 'X...X', '.X.X.', '..X..'] },
     x: { top: 2, rows: ['X...X', '.X.X.', '..X..', '.X.X.', 'X...X'] },
     y: { top: 2, rows: ['X...X', 'X...X', 'X...X', '.XXXX', '....X', '....X', '.XXX.'] }
   };
