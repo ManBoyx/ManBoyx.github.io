@@ -40,7 +40,14 @@
   }
   function showRepos(repos) {
     var list = $('repos'), section = $('repos-bloc');
-    if (!list || !section || !repos.length) return;
+    if (!list || !section) return;
+    if (!repos.length) {
+      // Aucun repository public : le bloc reste là, avec une phrase, pour garder les trois blocs côte à côte.
+      list.appendChild(el('li', 'vide-liste', 'Aucun repository public pour le moment.'));
+      $('nb-repos').textContent = '(0)';
+      section.hidden = false;
+      return;
+    }
     repos.forEach(function (r) {
       var li = el('li'), a = el('a', 'ligne');
       a.href = r.url;
