@@ -180,23 +180,53 @@
 
   function nettoyer() {
     if (s.audio) { s.audio.pause(); s.audio.removeAttribute('src'); s.audio.load(); s.audio = null; }
+    if (s.spotify && s.spotify.minuterie) clearTimeout(s.spotify.minuterie);
     s.spotify = null;
+    cacherAide();
     ecran.textContent = '';
     ecran.classList.remove('compact');
     s.cadre = null;
+  }
+
+  // Un message d'aide sous le lecteur (démarrage automatique refusé par le navigateur, lecteur bloqué…)
+  var aide = $('musique-aide');
+  function cacherAide() { aide.hidden = true; aide.textContent = ''; }
+  function montrerAide(texte, piste) {
+    aide.textContent = texte + ' ';
+    if (piste && piste.uri) {
+      var lien = el('a', '', 'Ouvrir ce morceau dans Spotify');
+      lien.href = 'https://open.spotify.com/track/' + piste.uri.split(':')[2];
+      lien.rel = 'noopener';
+      aide.appendChild(lien);
+    }
+    aide.hidden = false;
+    if (ecran.scrollIntoView) ecran.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
   // Le lecteur de Spotify tourne dans sa propre petite page (spotify.html), qui charge le script officiel de Spotify
   // seulement quand on choisit un morceau Spotify.
   function chargerSpotify() {
     var cadre = document.createElement('iframe');
-    cadre.src = 'spotify.html?v=94a97c0e';
+    cadre.src = 'spotify.html?v=c3cd6e6f';
     cadre.title = 'Lecteur Spotify';
     cadre.allow = 'autoplay; encrypted-media';
     ecran.appendChild(cadre);
     ecran.classList.add('compact');
     s.cadre = cadre;
-    s.spotify = { cadre: cadre, pret: false, fini: false };
+    s.spotify = { cadre: cadre, pret: false, fini: false, avance: false, minuterie: null };
+  }
+  // Si aucune lecture réelle n'a commencé au bout de 6 s, on explique quoi faire au lieu de rester silencieux.
+  function surveillerSpotify(p) {
+    var spot = s.spotify;
+    if (!spot) return;
+    if (spot.minuterie) clearTimeout(spot.minuterie);
+    spot.avance = false;
+    cacherAide();
+    spot.minuterie = setTimeout(function () {
+      if (s.spotify === spot && pistes[s.i] === p && !spot.avance) {
+        montrerAide("Le navigateur n'a pas lancé la musique tout seul : appuyez sur le bouton lecture du lecteur Spotify ci-dessus.", p);
+      }
+    }, 6000);
   }
 
   function charger(i) {
@@ -211,8 +241,10 @@
     if (reutiliser) {
       spotifyEnCours.fini = false;
       envoyer({ cmd: 'charger', uri: p.uri });
+      surveillerSpotify(p);
     } else if (p.fournisseur === 'spotify') {
       chargerSpotify();
+      surveillerSpotify(p);
     } else if (p.fournisseur === 'local') {
       var audio = new Audio(p.src);
       s.audio = audio;
@@ -267,13 +299,25 @@
     if (p.fournisseur === 'spotify') {
       if (e.origin !== location.origin || d.source !== 'egc-spotify') return;
       if (d.evt === 'pret') { s.spotify.pret = true; envoyer({ cmd: 'charger', uri: p.uri }); return; }
-      if (d.evt === 'maj' && d.uri === p.uri) {
-        s.temps = (d.position || 0) / 1000;
-        s.duree = (d.duree || 0) / 1000;
+      if (d.evt === 'bloque') {
+        montrerAide("Le lecteur Spotify n'a pas pu se charger (un bloqueur de publicités ou le réseau l'en empêche peut-être).", p);
+        return;
+      }
+      if (d.evt === 'maj' && d.uri === p.uri && s.spotify) {
+        var spot = s.spotify;
+        var debut = (d.position || 0), fin = (d.duree || 0);
+        // Une vraie lecture avance peu à peu. Un lecteur dont le navigateur refuse le son peut annoncer d'un coup « morceau fini » :
+        // on ne le croit que si on a vu la lecture avancer.
+        if (debut > 500 && debut < fin - 1500) {
+          spot.avance = true;
+          if (!aide.hidden) cacherAide();
+        }
+        if (!spot.avance && debut >= fin - 150) { s.lecture = false; s.temps = 0; s.duree = fin / 1000; afficher(); return; }
+        s.temps = debut / 1000;
+        s.duree = fin / 1000;
         s.lecture = !d.pause;
         // Fin du morceau (ou de son extrait) : on passe au suivant
-        if (!d.pause && d.duree > 0 && d.position >= d.duree - 150 && s.spotify && !s.spotify.fini) {
-          var spot = s.spotify;
+        if (spot.avance && !d.pause && fin > 0 && debut >= fin - 150 && !spot.fini) {
           spot.fini = true;
           setTimeout(function () { if (s.spotify === spot && pistes[s.i] === p) suivante(); }, 500);
         }

@@ -4,7 +4,7 @@
   'use strict';
 
   var pere = window.parent, origine = location.origin;
-  var api = null, ctrl = null, enAttente = null;
+  var api = null, ctrl = null, enAttente = null, pret = false;
 
   function dire(message) {
     message.source = 'egc-spotify';
@@ -17,7 +17,9 @@
     enAttente = null;
     api.createController(document.getElementById('cible'), { uri: uri, width: '100%', height: 152 }, function (c) {
       ctrl = c;
-      c.addListener('ready', function () { c.play(); });
+      c.addListener('ready', function () { pret = true; c.play(); });
+      // Un bloqueur de publicités peut laisser le cadre vide : sans « prêt » au bout de 12 s, on prévient la page.
+      setTimeout(function () { if (!pret) dire({ evt: 'bloque' }); }, 12000);
       c.addListener('playback_update', function (e) {
         var d = e.data || {};
         dire({ evt: 'maj', uri: d.playingURI, position: d.position, duree: d.duration, pause: d.isPaused, tampon: d.isBuffering });
@@ -45,6 +47,9 @@
   script.src = 'https://open.spotify.com/embed/iframe-api/v1';
   script.async = true;
   document.head.appendChild(script);
+
+  // Le script de Spotify n'est pas arrivé au bout de 10 s : bloqué (bloqueur de publicités, réseau).
+  setTimeout(function () { if (!api) dire({ evt: 'bloque' }); }, 10000);
 
   dire({ evt: 'pret' });
 })();
