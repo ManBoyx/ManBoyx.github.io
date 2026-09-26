@@ -15,6 +15,14 @@ git add data/github.json && git commit -m "Actualise les dépôts et l'activité
 
 Seuls les dépôts **publics** sont listés. Pour l'activité, le script ne garde que le nombre de contributions par jour.
 
+## Avant chaque envoi
+
+```bash
+python3 tools/versions.py   # met à jour les numéros de version de style.css et page.js dans index.html
+```
+
+GitHub Pages laisse les fichiers 10 minutes dans les navigateurs : sans ces numéros, une page mise à jour peut s'afficher avec l'ancienne feuille de style ou l'ancien script.
+
 ## La musique
 
 Le lecteur (barre en bas : lecture, pause, précédent, suivant, position, volume) pilote trois sortes de pistes, écrites dans la section « Musique » de `index.html` :
