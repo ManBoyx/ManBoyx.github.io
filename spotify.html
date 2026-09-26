@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <!-- Cette petite page est la seule à autoriser « unsafe-eval » : le script officiel de Spotify en a besoin. Elle est isolée dans son propre cadre, la page principale garde une politique stricte. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-eval' https://open.spotify.com https://embed-cdn.spotifycdn.com; frame-src https://open.spotify.com; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <title>Lecteur Spotify</title>
+  <link rel="stylesheet" href="spotify.css">
+</head>
+<body>
+  <div id="cible"></div>
+  <script src="spotify.js?v=e31f0655"></script>
+</body>
+</html>

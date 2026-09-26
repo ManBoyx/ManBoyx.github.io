@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://player.vimeo.com; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; connect-src 'self'; frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com; base-uri 'none'; form-action 'none'">
   <title>Manboyxv4</title>
   <meta name="description" content="Page personnelle de Manboyxv4, développeur et administrateur du serveur web Minebed et du projet Minebed : repositories, activité GitHub et musique.">
   <meta name="theme-color" content="#0f1012">
@@ -14,9 +14,9 @@
   <link rel="icon" href="img/minebed-icone.webp" type="image/webp">
   <link rel="preload" href="fonts/LilitaOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="fonts/Fredoka.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="style.css?v=dcbcee85">
+  <link rel="stylesheet" href="style.css?v=2ea5ee4d">
   <noscript><link rel="stylesheet" href="sans-js.css"></noscript>
-  <script src="page.js?v=4f06dbed" defer></script>
+  <script src="page.js?v=f3ebec5a" defer></script>
 </head>
 <body>
   <svg class="sr" width="0" height="0" aria-hidden="true">
@@ -88,29 +88,32 @@
       <section class="bloc" aria-labelledby="h-musique">
         <h2 id="h-musique">Musique</h2>
         <div class="ecran" id="ecran"><p class="vide">Appuyez sur une piste pour lancer la musique.</p></div>
-        <ul class="liste pistes">
-          <li>
-            <a class="ligne disque" href="https://www.youtube.com/watch?v=KK3KXAECte4" rel="noopener" data-provider="youtube" data-id="KK3KXAECte4" data-titre="Megalovania" data-par="Undertale, Toby Fox">
-              <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b0b0d"/><circle cx="8" cy="8" r="5.5" fill="#2a2b31"/><circle cx="8" cy="8" r="3" fill="#a3525a"/><circle cx="8" cy="8" r="1" fill="#0b0b0d"/></svg>
-              <span class="t">Megalovania</span>
-              <span class="d">Undertale, Toby Fox</span>
-            </a>
-          </li>
-          <li>
-            <a class="ligne disque" href="https://vimeo.com/418489843" rel="noopener" data-provider="vimeo" data-id="418489843" data-titre="Pas de Panique à bord" data-par="Les Ratz">
-              <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b0b0d"/><circle cx="8" cy="8" r="5.5" fill="#2a2b31"/><circle cx="8" cy="8" r="3" fill="#4f86a6"/><circle cx="8" cy="8" r="1" fill="#0b0b0d"/></svg>
-              <span class="t">Pas de Panique à bord</span>
-              <span class="d">Les Ratz</span>
-            </a>
-          </li>
-          <li>
-            <a class="ligne disque" href="https://www.youtube.com/watch?v=tBdLO8u-0L8" rel="noopener" data-provider="youtube" data-id="tBdLO8u-0L8" data-titre="Hammer of Justice" data-par="DELTARUNE Chapitres 3 et 4, Toby Fox">
-              <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b0b0d"/><circle cx="8" cy="8" r="5.5" fill="#2a2b31"/><circle cx="8" cy="8" r="3" fill="#7b64ad"/><circle cx="8" cy="8" r="1" fill="#0b0b0d"/></svg>
-              <span class="t">Hammer of Justice</span>
-              <span class="d">DELTARUNE Chapitres 3 et 4, Toby Fox</span>
-            </a>
-          </li>
-        </ul>
+        <div class="menu-musique">
+          <button class="menu-bouton" id="menu-bouton" type="button" aria-expanded="false" aria-controls="menu-liste"><span>Toutes les musiques <span class="nb" id="menu-nb">(3)</span></span><i class="fleche" aria-hidden="true"></i></button>
+          <ul class="liste pistes" id="menu-liste" hidden>
+            <li>
+              <a class="ligne disque" href="https://www.youtube.com/watch?v=KK3KXAECte4" rel="noopener" data-provider="youtube" data-id="KK3KXAECte4" data-titre="Megalovania" data-par="Undertale, Toby Fox">
+                <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b0b0d"/><circle cx="8" cy="8" r="5.5" fill="#2a2b31"/><circle cx="8" cy="8" r="3" fill="#a3525a"/><circle cx="8" cy="8" r="1" fill="#0b0b0d"/></svg>
+                <span class="t">Megalovania</span>
+                <span class="d">Undertale, Toby Fox</span>
+              </a>
+            </li>
+            <li>
+              <a class="ligne disque" href="https://vimeo.com/418489843" rel="noopener" data-provider="vimeo" data-id="418489843" data-titre="Pas de Panique à bord" data-par="Les Ratz">
+                <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b0b0d"/><circle cx="8" cy="8" r="5.5" fill="#2a2b31"/><circle cx="8" cy="8" r="3" fill="#4f86a6"/><circle cx="8" cy="8" r="1" fill="#0b0b0d"/></svg>
+                <span class="t">Pas de Panique à bord</span>
+                <span class="d">Les Ratz</span>
+              </a>
+            </li>
+            <li>
+              <a class="ligne disque" href="https://www.youtube.com/watch?v=tBdLO8u-0L8" rel="noopener" data-provider="youtube" data-id="tBdLO8u-0L8" data-titre="Hammer of Justice" data-par="DELTARUNE Chapitres 3 et 4, Toby Fox">
+                <svg class="icone" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#0b0b0d"/><circle cx="8" cy="8" r="5.5" fill="#2a2b31"/><circle cx="8" cy="8" r="3" fill="#7b64ad"/><circle cx="8" cy="8" r="1" fill="#0b0b0d"/></svg>
+                <span class="t">Hammer of Justice</span>
+                <span class="d">DELTARUNE Chapitres 3 et 4, Toby Fox</span>
+              </a>
+            </li>
+          </ul>
+          </div>
       </section>
     </div>
   </main>

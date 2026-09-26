@@ -118,13 +118,11 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panneau.hidden) fermerLangue(); });
 
   // ---- Lecteur
-  var ORIGINES = { youtube: 'https://www.youtube-nocookie.com', vimeo: 'https://player.vimeo.com' };
-  var pistes = Array.prototype.map.call(document.querySelectorAll('.disque'), function (a) {
-    return { lien: a, fournisseur: a.dataset.provider, id: a.dataset.id, src: a.dataset.src, titre: a.dataset.titre, par: a.dataset.par };
-  });
+  var ORIGINES = { youtube: 'https://www.youtube-nocookie.com', vimeo: 'https://player.vimeo.com', spotify: location.origin };
+  var pistes = [];
   var ecran = $('ecran'), barre = $('barre'), progres = $('b-progres'), volume = $('b-vol'), boutonJouer = $('b-jouer');
   // L'état du lecteur : quelle piste, l'élément qui joue, et ce que le lecteur nous a dit (lecture, temps, durée)
-  var s = { i: -1, cadre: null, audio: null, lecture: false, temps: 0, duree: 0, glisse: false, recu: false, dernier: null, volume: 1 };
+  var s = { i: -1, cadre: null, audio: null, spotify: null, lecture: false, temps: 0, duree: 0, glisse: false, recu: false, dernier: null, volume: 1 };
 
   function minsec(t) {
     t = Math.max(0, Math.floor(t || 0));
@@ -137,6 +135,7 @@
     $('b-par').textContent = p.par;
     boutonJouer.classList.toggle('est-lecture', s.lecture);
     barre.classList.toggle('est-lecture', s.lecture);
+    barre.classList.toggle('sans-volume', p.fournisseur === 'spotify');
     boutonJouer.setAttribute('aria-label', s.lecture ? 'Pause' : 'Lecture');
     if (!s.glisse) {
       var part = s.duree > 0 ? Math.min(1, s.temps / s.duree) : 0;
@@ -161,6 +160,9 @@
       if (!s.audio) return;
       if (nom === 'lire') s.audio.play(); else if (nom === 'pause') s.audio.pause();
       else if (nom === 'aller') s.audio.currentTime = valeur; else if (nom === 'volume') s.audio.volume = valeur;
+    } else if (p.fournisseur === 'spotify') {
+      // le lecteur de Spotify n'a pas de réglage de volume : la barre le masque (voir afficher)
+      if (nom === 'lire') envoyer({ cmd: 'lire' }); else if (nom === 'pause') envoyer({ cmd: 'pause' }); else if (nom === 'aller') envoyer({ cmd: 'aller', valeur: valeur });
     } else if (p.fournisseur === 'youtube') {
       var f = { lire: 'playVideo', pause: 'pauseVideo', aller: 'seekTo', volume: 'setVolume' }[nom];
       var args = nom === 'aller' ? [valeur, true] : nom === 'volume' ? [Math.round(valeur * 100)] : [];
@@ -178,16 +180,40 @@
 
   function nettoyer() {
     if (s.audio) { s.audio.pause(); s.audio.removeAttribute('src'); s.audio.load(); s.audio = null; }
+    s.spotify = null;
     ecran.textContent = '';
+    ecran.classList.remove('compact');
     s.cadre = null;
   }
+
+  // Le lecteur de Spotify tourne dans sa propre petite page (spotify.html), qui charge le script officiel de Spotify
+  // seulement quand on choisit un morceau Spotify.
+  function chargerSpotify() {
+    var cadre = document.createElement('iframe');
+    cadre.src = 'spotify.html?v=94a97c0e';
+    cadre.title = 'Lecteur Spotify';
+    cadre.allow = 'autoplay; encrypted-media';
+    ecran.appendChild(cadre);
+    ecran.classList.add('compact');
+    s.cadre = cadre;
+    s.spotify = { cadre: cadre, pret: false, fini: false };
+  }
+
   function charger(i) {
     var p = pistes[i];
-    nettoyer();
+    // D'un morceau Spotify à l'autre, on garde le même lecteur : on lui donne juste le nouveau morceau.
+    var reutiliser = p.fournisseur === 'spotify' && s.spotify && s.spotify.pret && ecran.contains(s.spotify.cadre);
+    var spotifyEnCours = reutiliser ? s.spotify : null;
+    if (!reutiliser) nettoyer();
     s.i = i; s.lecture = false; s.temps = 0; s.duree = 0; s.recu = false; s.dernier = null;
     pistes.forEach(function (x, k) { if (k === i) x.lien.setAttribute('aria-current', 'true'); else x.lien.removeAttribute('aria-current'); });
 
-    if (p.fournisseur === 'local') {
+    if (reutiliser) {
+      spotifyEnCours.fini = false;
+      envoyer({ cmd: 'charger', uri: p.uri });
+    } else if (p.fournisseur === 'spotify') {
+      chargerSpotify();
+    } else if (p.fournisseur === 'local') {
       var audio = new Audio(p.src);
       s.audio = audio;
       audio.volume = s.volume;
@@ -238,6 +264,23 @@
     var d = e.data;
     if (typeof d === 'string') { try { d = JSON.parse(d); } catch (_) { return; } }
     if (!d || typeof d !== 'object') return;
+    if (p.fournisseur === 'spotify') {
+      if (e.origin !== location.origin || d.source !== 'egc-spotify') return;
+      if (d.evt === 'pret') { s.spotify.pret = true; envoyer({ cmd: 'charger', uri: p.uri }); return; }
+      if (d.evt === 'maj' && d.uri === p.uri) {
+        s.temps = (d.position || 0) / 1000;
+        s.duree = (d.duree || 0) / 1000;
+        s.lecture = !d.pause;
+        // Fin du morceau (ou de son extrait) : on passe au suivant
+        if (!d.pause && d.duree > 0 && d.position >= d.duree - 150 && s.spotify && !s.spotify.fini) {
+          var spot = s.spotify;
+          spot.fini = true;
+          setTimeout(function () { if (s.spotify === spot && pistes[s.i] === p) suivante(); }, 500);
+        }
+        afficher();
+      }
+      return;
+    }
     if (p.fournisseur === 'youtube') {
       if (d.channel === 'widget') s.recu = true;
       var info = d.info;
@@ -282,13 +325,70 @@
     s.volume = volume.value / 100;
     commande('volume', s.volume);
   });
-  pistes.forEach(function (p, i) {
-    p.lien.addEventListener('click', function (event) {
+  // Chaque piste (fixe dans la page, ou venue de la playlist Spotify) est enregistrée ici, avec son clic
+  function ajouterPiste(a) {
+    var p = { lien: a, fournisseur: a.dataset.provider, id: a.dataset.id, src: a.dataset.src, uri: a.dataset.uri, titre: a.dataset.titre, par: a.dataset.par };
+    pistes.push(p);
+    a.addEventListener('click', function (event) {
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return; // ouvrir dans un onglet reste possible
       event.preventDefault();
-      charger(i);
+      charger(pistes.indexOf(p));
     });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.disque'), ajouterPiste);
+
+  // Le menu déroulant : toutes les musiques
+  var menuBouton = $('menu-bouton'), menuListe = $('menu-liste');
+  menuBouton.addEventListener('click', function () {
+    var ouvert = menuBouton.getAttribute('aria-expanded') === 'true';
+    menuBouton.setAttribute('aria-expanded', String(!ouvert));
+    menuListe.hidden = ouvert;
+    var courant = menuListe.querySelector('[aria-current="true"]');
+    if (!ouvert && courant) menuListe.scrollTop = Math.max(0, courant.offsetTop - menuListe.offsetTop - 8);
   });
+  function disqueVert() {
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'icone');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('aria-hidden', 'true');
+    [['7.5', '#0b0b0d'], ['5.5', '#2a2b31'], ['3', '#4a8a63'], ['1', '#0b0b0d']].forEach(function (c) {
+      var cercle = document.createElementNS(NS, 'circle');
+      cercle.setAttribute('cx', '8'); cercle.setAttribute('cy', '8'); cercle.setAttribute('r', c[0]); cercle.setAttribute('fill', c[1]);
+      svg.appendChild(cercle);
+    });
+    return svg;
+  }
+  fetch('data/spotify.json', { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (donnees) {
+      if (!donnees.pistes || !donnees.pistes.length) return;
+      var titre = el('li', 'separateur', 'Ma playlist Spotify : ' + donnees.playlist.nom);
+      var note = el('li', 'separateur-note', "Le lecteur de Spotify joue un extrait d'environ 30 secondes, ou le morceau entier si vous êtes connecté à Spotify dans ce navigateur.");
+      menuListe.appendChild(titre);
+      menuListe.appendChild(note);
+      donnees.pistes.forEach(function (t) {
+        var li = el('li'), a = el('a', 'ligne disque');
+        a.href = 'https://open.spotify.com/track/' + t.id;
+        a.rel = 'noopener';
+        a.dataset.provider = 'spotify';
+        a.dataset.uri = 'spotify:track:' + t.id;
+        a.dataset.titre = t.titre;
+        a.dataset.par = t.artistes;
+        a.appendChild(disqueVert());
+        a.appendChild(el('span', 't', t.titre));
+        a.appendChild(el('span', 'd', t.artistes));
+        li.appendChild(a);
+        menuListe.appendChild(li);
+        ajouterPiste(a);
+      });
+      var lien = el('li', 'lien-externe'), ouvrir = el('a', '', 'Ouvrir la playlist dans Spotify');
+      ouvrir.href = donnees.playlist.url;
+      ouvrir.rel = 'noopener';
+      lien.appendChild(ouvrir);
+      menuListe.appendChild(lien);
+      $('menu-nb').textContent = '(' + pistes.length + ')';
+    })
+    .catch(function () { /* pas de playlist : le menu garde les morceaux de la page */ });
 
   // ---- Écran d'entrée : un clic, et la musique démarre (un navigateur ne lance le son qu'après un geste)
   var entree = $('entree'), page = $('page');
