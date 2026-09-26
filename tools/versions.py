@@ -20,9 +20,6 @@ def remplacer(fichier, motif, nouveau):
     return n
 
 
-# Ordre : spotify.js (dans spotify.html), puis spotify.html (dans page.js), puis page.js et style.css (dans index.html).
-print('spotify.js  ->', empreinte_de('spotify.js'), remplacer('spotify.html', r'spotify\.js\?v=[0-9a-f]+', 'spotify.js?v=' + empreinte_de('spotify.js')), 'référence')
-print('spotify.html ->', empreinte_de('spotify.html'), remplacer('page.js', r"spotify\.html\?v=[0-9a-f]+", 'spotify.html?v=' + empreinte_de('spotify.html')), 'référence')
 html = os.path.join(racine, 'index.html')
 texte = open(html, encoding='utf-8').read()
 for fichier in ('style.css', 'page.js'):

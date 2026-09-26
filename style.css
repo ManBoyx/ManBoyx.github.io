@@ -152,11 +152,6 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 .vide { margin: 0; padding: 0 16px; color: var(--doux); text-align: center; font-size: 0.95rem; }
 
 /* Le menu déroulant qui contient toutes les musiques */
-.aide { margin: 0 0 12px; padding: 10px 12px; font-size: 0.92rem; color: var(--texte); background: #0f1012; border: 1px solid var(--trait); border-left: 3px solid var(--or); border-radius: var(--rayon); }
-.aide[hidden] { display: none; }
-.ecran.attention { border-color: var(--or); }
-.aide a { color: var(--accent); }
-.ecran.compact { aspect-ratio: auto; height: 152px; }
 .menu-bouton {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   width: 100%;
@@ -179,7 +174,6 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 .pistes .separateur { margin: 10px 2px 2px; font: 400 1.05rem/1.2 var(--titres); }
 .pistes .separateur-note { margin: 0 2px 4px; color: var(--doux); font-size: 0.85rem; }
 .pistes .lien-externe { margin: 6px 2px 2px; font-size: 0.9rem; }
-.barre.sans-volume .vol { display: none; }
 
 /* La barre du bas : le lecteur */
 .barre { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: #0b0b0d; border-top: 1px solid var(--trait); }
