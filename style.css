@@ -46,6 +46,27 @@ h1 { margin: 0; font: 400 2.4rem/1.1 var(--titres); }
 .logo { flex: none; display: block; }
 .logo img { display: block; width: 260px; height: auto; }
 
+/* Compétences : une pastille par langage, dans la couleur que GitHub lui attribue */
+.competences { margin-bottom: 20px; }
+.langages { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.langages li { display: inline-flex; align-items: center; gap: 9px; padding: 6px 13px 6px 10px; font-weight: 500; background: var(--touche); border: 1px solid #3a3c46; border-radius: var(--rayon); }
+/* Le fin cercle clair garde visibles les couleurs très sombres (Lua, C) sur le fond noir. */
+.pastille { flex: none; width: 13px; height: 13px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35); }
+.p-rust { background: #dea584; }
+.p-html { background: #e34c26; }
+.p-css { background: #663399; }
+.p-java { background: #b07219; }
+.p-javascript { background: #f1e05a; }
+.p-php { background: #4F5D95; }
+.p-python { background: #3572A5; }
+.p-typescript { background: #3178c6; }
+.p-assembly { background: #6E4C13; }
+.p-lua { background: #000080; }
+.p-c { background: #555555; }
+.p-cpp { background: #f34b7d; }
+.p-csharp { background: #178600; }
+.p-bash { background: #89e051; }
+
 /* Trois blocs côte à côte */
 .trois { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
 .bloc { padding: 18px; background: var(--bloc); border: 1px solid var(--trait); border-radius: var(--rayon); }

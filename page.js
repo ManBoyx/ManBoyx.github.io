@@ -6,7 +6,7 @@
 
   var NS = 'http://www.w3.org/2000/svg';
   var date = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-  var COULEURS = { Rust: '#dea584', TypeScript: '#3178c6', JavaScript: '#f1e05a', Java: '#b07219', CSS: '#8a6bd1', Python: '#4b8bbe', HTML: '#e34c26' };
+  var COULEURS = { Rust: '#dea584', HTML: '#e34c26', CSS: '#663399', Java: '#b07219', JavaScript: '#f1e05a', PHP: '#4F5D95', Python: '#3572A5', TypeScript: '#3178c6', Assembly: '#6E4C13', Lua: '#000080', C: '#555555', 'C++': '#f34b7d', 'C#': '#178600', Shell: '#89e051' };
 
   function el(tag, cls, text) {
     var e = document.createElement(tag);
