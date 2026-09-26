@@ -190,7 +190,7 @@
 
   // Un message d'aide sous le lecteur (démarrage automatique refusé par le navigateur, lecteur bloqué…)
   var aide = $('musique-aide');
-  function cacherAide() { aide.hidden = true; aide.textContent = ''; }
+  function cacherAide() { aide.hidden = true; aide.textContent = ''; ecran.classList.remove('attention'); }
   function montrerAide(texte, piste) {
     aide.textContent = texte + ' ';
     if (piste && piste.uri) {
@@ -200,6 +200,7 @@
       aide.appendChild(lien);
     }
     aide.hidden = false;
+    ecran.classList.add('attention');
     if (ecran.scrollIntoView) ecran.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
@@ -222,11 +223,13 @@
     if (spot.minuterie) clearTimeout(spot.minuterie);
     spot.avance = false;
     cacherAide();
+    // Firefox refuse presque toujours de lancer la musique d'un lecteur intégré sans clic dans ce lecteur : on l'explique tout de suite.
+    var firefox = /Firefox\//.test(navigator.userAgent);
     spot.minuterie = setTimeout(function () {
       if (s.spotify === spot && pistes[s.i] === p && !spot.avance) {
-        montrerAide("Le navigateur n'a pas lancé la musique tout seul : appuyez sur le bouton lecture du lecteur Spotify ci-dessus.", p);
+        montrerAide((firefox ? 'Firefox bloque le démarrage automatique de la musique' : "Le navigateur n'a pas lancé la musique tout seul") + " : appuyez sur le bouton lecture (▶) du lecteur Spotify ci-dessus.", p);
       }
-    }, 6000);
+    }, firefox ? 1500 : 6000);
   }
 
   function charger(i) {

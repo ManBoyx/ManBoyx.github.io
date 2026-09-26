@@ -154,6 +154,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 /* Le menu déroulant qui contient toutes les musiques */
 .aide { margin: 0 0 12px; padding: 10px 12px; font-size: 0.92rem; color: var(--texte); background: #0f1012; border: 1px solid var(--trait); border-left: 3px solid var(--or); border-radius: var(--rayon); }
 .aide[hidden] { display: none; }
+.ecran.attention { border-color: var(--or); }
 .aide a { color: var(--accent); }
 .ecran.compact { aspect-ratio: auto; height: 152px; }
 .menu-bouton {
