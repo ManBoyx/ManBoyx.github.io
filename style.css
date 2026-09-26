@@ -49,7 +49,24 @@ h1 { margin: 0; font: 400 2.4rem/1.1 var(--titres); }
 /* Compétences : une pastille par langage, dans la couleur que GitHub lui attribue */
 .competences { margin-bottom: 20px; }
 .langages { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.langages li { display: inline-flex; align-items: center; gap: 9px; padding: 6px 13px 6px 10px; font-weight: 500; background: var(--touche); border: 1px solid #3a3c46; border-radius: var(--rayon); }
+.langue {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 6px 13px 6px 10px;
+  font: 500 1.0625rem/1.5 var(--corps);
+  color: var(--texte);
+  background: var(--touche);
+  border: 1px solid #3a3c46;
+  border-radius: var(--rayon);
+  cursor: pointer;
+}
+.langue:hover { background: var(--touche-haut); }
+.langue[aria-expanded="true"] { background: var(--touche-haut); border-color: var(--accent); }
+.langue-panneau { margin-top: 12px; padding: 14px 16px; background: #0f1012; border: 1px solid var(--trait); border-radius: var(--rayon); }
+.langue-panneau[hidden] { display: none; }
+.langue-panneau h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font: 400 1.2rem/1.2 var(--titres); }
+.langue-panneau p { margin: 0; color: var(--doux); max-width: 70ch; }
+.astuce { margin: 12px 0 0; color: var(--doux); font-size: 0.9rem; }
+.astuce[hidden] { display: none; }
 /* Le fin cercle clair garde visibles les couleurs très sombres (Lua, C) sur le fond noir. */
 .pastille { flex: none; width: 13px; height: 13px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35); }
 .p-rust { background: #dea584; }

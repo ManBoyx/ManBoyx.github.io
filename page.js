@@ -90,6 +90,33 @@
     .then(function (data) { showRepos(data.repos || []); showActivity(data.activity); })
     .catch(function () { /* pas de données : ces deux blocs restent cachés */ });
 
+  // ---- Compétences : un clic sur un langage affiche sa description, un second clic la referme
+  var langues = Array.prototype.slice.call(document.querySelectorAll('.langue'));
+  var panneau = $('langue-panneau'), astuce = $('langue-astuce');
+  function fermerLangue() {
+    langues.forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
+    panneau.hidden = true;
+    astuce.hidden = false;
+  }
+  langues.forEach(function (bouton) {
+    bouton.addEventListener('click', function () {
+      if (bouton.getAttribute('aria-expanded') === 'true') { fermerLangue(); return; }
+      langues.forEach(function (b) { b.setAttribute('aria-expanded', b === bouton ? 'true' : 'false'); });
+      panneau.textContent = '';
+      var titre = el('h3');
+      var pastille = el('i', 'pastille p-' + bouton.dataset.cle);
+      pastille.setAttribute('aria-hidden', 'true');
+      titre.appendChild(pastille);
+      titre.appendChild(document.createTextNode(bouton.dataset.nom));
+      panneau.appendChild(titre);
+      panneau.appendChild(el('p', '', bouton.dataset.desc));
+      panneau.hidden = false;
+      astuce.hidden = true;
+    });
+  });
+  if (panneau) panneau.addEventListener('keydown', function (e) { if (e.key === 'Escape') fermerLangue(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panneau.hidden) fermerLangue(); });
+
   // ---- Lecteur
   var ORIGINES = { youtube: 'https://www.youtube-nocookie.com', vimeo: 'https://player.vimeo.com' };
   var pistes = Array.prototype.map.call(document.querySelectorAll('.disque'), function (a) {

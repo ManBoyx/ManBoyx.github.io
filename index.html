@@ -52,21 +52,23 @@
     <section class="bloc competences" aria-labelledby="h-competences">
       <h2 id="h-competences">Compétences</h2>
       <ul class="langages">
-        <li><i class="pastille p-rust" aria-hidden="true"></i>Rust</li>
-        <li><i class="pastille p-html" aria-hidden="true"></i>HTML</li>
-        <li><i class="pastille p-css" aria-hidden="true"></i>CSS</li>
-        <li><i class="pastille p-java" aria-hidden="true"></i>Java</li>
-        <li><i class="pastille p-javascript" aria-hidden="true"></i>JavaScript</li>
-        <li><i class="pastille p-php" aria-hidden="true"></i>PHP</li>
-        <li><i class="pastille p-python" aria-hidden="true"></i>Python</li>
-        <li><i class="pastille p-typescript" aria-hidden="true"></i>TypeScript</li>
-        <li><i class="pastille p-assembly" aria-hidden="true"></i>Assembly</li>
-        <li><i class="pastille p-lua" aria-hidden="true"></i>Lua</li>
-        <li><i class="pastille p-c" aria-hidden="true"></i>C</li>
-        <li><i class="pastille p-cpp" aria-hidden="true"></i>C++</li>
-        <li><i class="pastille p-csharp" aria-hidden="true"></i>C#</li>
-        <li><i class="pastille p-bash" aria-hidden="true"></i>Bash</li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="rust" data-nom="Rust" data-desc="Langage compilé, rapide et sûr : il gère la mémoire sans ramasse-miettes et repère de nombreuses erreurs avant l&#x27;exécution. On l&#x27;utilise pour les outils en ligne de commande, les moteurs et les programmes système."><i class="pastille p-rust" aria-hidden="true"></i>Rust</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="html" data-nom="HTML" data-desc="Langage de balisage qui décrit la structure d&#x27;une page web : titres, paragraphes, liens, images, formulaires."><i class="pastille p-html" aria-hidden="true"></i>HTML</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="css" data-nom="CSS" data-desc="Langage de style des pages web : couleurs, polices, mise en page, animations et adaptation aux différentes tailles d&#x27;écran."><i class="pastille p-css" aria-hidden="true"></i>CSS</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="java" data-nom="Java" data-desc="Langage orienté objet qui tourne sur la machine virtuelle Java. C&#x27;est le langage de Minecraft Java Edition, de ses serveurs (Spigot, Paper) et de leurs plugins."><i class="pastille p-java" aria-hidden="true"></i>Java</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="javascript" data-nom="JavaScript" data-desc="Langage des pages web interactives. Il sert aussi côté serveur avec Node.js et pour les applications de bureau avec Electron."><i class="pastille p-javascript" aria-hidden="true"></i>JavaScript</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="php" data-nom="PHP" data-desc="Langage de script pensé pour le web côté serveur. Il fait tourner WordPress, Laravel et Azuriom, un CMS pour les sites de serveurs de jeu."><i class="pastille p-php" aria-hidden="true"></i>PHP</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="python" data-nom="Python" data-desc="Langage lisible et polyvalent : scripts, automatisation, analyse de données, sites web."><i class="pastille p-python" aria-hidden="true"></i>Python</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="typescript" data-nom="TypeScript" data-desc="JavaScript avec des types : les erreurs sont repérées avant l&#x27;exécution. Il est ensuite compilé en JavaScript."><i class="pastille p-typescript" aria-hidden="true"></i>TypeScript</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="assembly" data-nom="Assembly" data-desc="Langage de plus bas niveau : chaque instruction correspond presque une à une à une instruction du processeur. Il sert au système, aux pilotes et à l&#x27;optimisation fine."><i class="pastille p-assembly" aria-hidden="true"></i>Assembly</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="lua" data-nom="Lua" data-desc="Langage de script léger et rapide, souvent intégré dans des jeux et des applications, comme Roblox ou le mod ComputerCraft pour Minecraft."><i class="pastille p-lua" aria-hidden="true"></i>Lua</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="c" data-nom="C" data-desc="Langage compilé proche de la machine, à la base des systèmes d&#x27;exploitation, des pilotes et de très nombreux logiciels."><i class="pastille p-c" aria-hidden="true"></i>C</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="cpp" data-nom="C++" data-desc="Évolution du C avec des objets et de nombreuses abstractions : moteurs de jeux, navigateurs, logiciels qui demandent de la performance."><i class="pastille p-cpp" aria-hidden="true"></i>C++</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="csharp" data-nom="C#" data-desc="Langage orienté objet de Microsoft pour la plateforme .NET : applications, services web et jeux avec Unity."><i class="pastille p-csharp" aria-hidden="true"></i>C#</button></li>
+        <li><button class="langue" type="button" aria-expanded="false" aria-controls="langue-panneau" data-cle="bash" data-nom="Bash" data-desc="Interpréteur de commandes de Linux et de macOS. On y écrit des scripts pour automatiser des tâches et administrer des serveurs."><i class="pastille p-bash" aria-hidden="true"></i>Bash</button></li>
       </ul>
+      <div class="langue-panneau" id="langue-panneau" role="region" aria-live="polite" aria-label="Description du langage" hidden></div>
+      <p class="astuce" id="langue-astuce">Cliquez sur un langage pour en savoir plus.</p>
     </section>
 
     <div class="trois">
